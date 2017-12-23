@@ -12,9 +12,9 @@ public class Duet {
         }
         String[] instructions = allInstructions.split(",");
 
-        int frequency = 0;
-        int result = 0; // to be set by first call to rcv when argument isn't 0
-        Hashtable<String, Integer> registers = new Hashtable<>();
+        long frequency = 0;
+        long result = 0; // to be set by first call to rcv when argument isn't 0
+        Hashtable<String, Long> registers = new Hashtable<>();
         boolean recovered = false;
 
         // deal with each instruction
@@ -23,8 +23,8 @@ public class Duet {
             String function = instruction.substring(0, 3);
             // register and value used by some cases to improve readability
             String register = "";
-            int value = 0;
-            System.out.println(instruction);
+            long value = 0;
+
             switch (function) {
                 case "snd":
                     try {
@@ -32,6 +32,7 @@ public class Duet {
                     } catch (NumberFormatException e) {
                         frequency = registers.get(instruction.substring(4));
                     }
+
                     break;
                 case "set":
                     try {
@@ -40,6 +41,7 @@ public class Duet {
                         value = registers.get(instruction.substring(6));
                     }
                     registers.put(instruction.substring(4, 5), value);
+
                     break;
                 case "add":
                     try {
@@ -50,6 +52,7 @@ public class Duet {
                     register = instruction.substring(4, 5);
                     // the conditional checks if this register has been initialized yet
                     registers.put(register, ((registers.get(register) == null) ? 0 : registers.get(register)) + value);
+
                     break;
                 case "mul":
                     try {
@@ -59,6 +62,7 @@ public class Duet {
                     }
                     register = instruction.substring(4, 5);
                     registers.put(register, ((registers.get(register) == null) ? 0 : registers.get(register)) * value);
+
                     break;
                 case "mod":
                     try {
@@ -68,6 +72,7 @@ public class Duet {
                     }
                     register = instruction.substring(4, 5);
                     registers.put(register, ((registers.get(register) == null) ? 0 : registers.get(register)) % value);
+
                     break;
                 case "rcv":
                     register = instruction.substring(4, 5);
@@ -75,9 +80,10 @@ public class Duet {
                         recovered = true;
                         result = frequency;
                     }
+
                     break;
                 case "jgz":
-                    int firstArgument = 0;
+                    long firstArgument = 0;
                     try {
                         firstArgument = Integer.parseInt(instruction.substring(4, 5));
                     } catch (NumberFormatException e) {
@@ -94,6 +100,7 @@ public class Duet {
                         i += value;
 
                     }
+
                     break;
             }
         }
